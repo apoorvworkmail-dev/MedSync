@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function Signup() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ function Signup() {
     setForm((currentForm) => ({ ...currentForm, [name]: value }));
   };
 
-  const handleSignup = (event) => {
+  const handleSignup = async (event) => {
     event.preventDefault();
 
     if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
@@ -22,8 +23,20 @@ function Signup() {
       return;
     }
 
-    localStorage.setItem("isLoggedIn", "true");
-    navigate("/dashboard");
+    try {
+      const response = await API.post("/auth/signup", form);
+
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("isLoggedIn", "true");
+
+      navigate("/dashboard");
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+          error.message ||
+          "Signup failed"
+      );
+    }
   };
 
   return (

@@ -1,5 +1,7 @@
+
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import API from "../services/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -8,17 +10,32 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleLogin = async (e) => {
+  e.preventDefault();
 
-    if (!email.trim() || !password.trim()) {
-      alert("Please fill all fields");
-      return;
-    }
+  try {
+    const response = await API.post("/auth/login", {
+      email,
+      password,
+    });
 
+    localStorage.setItem("token", response.data.token);
     localStorage.setItem("isLoggedIn", "true");
+
+    alert("Login Successful");
+
     navigate(redirectTo, { replace: true });
-  };
+
+  } catch (error) {
+  console.log(error);
+
+  alert(
+    error.response?.data?.message ||
+    error.message ||
+    "Login Failed"
+  );
+}
+};
 
   return (
     <main className="auth-page">
