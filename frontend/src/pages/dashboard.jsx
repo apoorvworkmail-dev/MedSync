@@ -1,24 +1,24 @@
-import ActivityFeed from "../components/Dashboard/ActivityFeed";
+import DashboardLayout from "../layouts/DashboardLayout";
+import StatsCards from "../components/Dashboard/StatsCards";
+import RecentPatients from "../components/Dashboard/RecentPatients";
 import AnalyticsChart from "../components/Dashboard/AnalyticsChart";
 import LiveMonitoring from "../components/Dashboard/LiveMonitoring";
-import RecentPatients from "../components/Dashboard/RecentPatients";
-import StatsCards from "../components/Dashboard/StatsCards";
-import DashboardLayout from "../layouts/DashboardLayout";
+import ActivityFeed from "../components/Dashboard/ActivityFeed";
 
 function Dashboard() {
   return (
-    <DashboardLayout
-      title="Welcome back, Dr. Sarah Johnson"
-      subtitle="Here's what's happening with your practice today."
-    >
+    <DashboardLayout>
       <StatsCards />
 
-      <div className="dashboard-grid">
+      <section className="dashboard-grid">
         <RecentPatients />
         <AnalyticsChart />
+      </section>
+
+      <section className="dashboard-grid">
         <LiveMonitoring />
         <ActivityFeed />
-      </div>
+      </section>
     </DashboardLayout>
   );
 }

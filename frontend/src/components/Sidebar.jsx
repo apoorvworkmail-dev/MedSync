@@ -1,142 +1,36 @@
 import { NavLink } from "react-router-dom";
 
-function Sidebar({ darkMode }) {
-  const linkStyle =
-    "flex items-center gap-3 px-4 py-3 rounded-xl transition font-medium";
+function Sidebar() {
+  const links = [
+    { to: "/dashboard", label: "Dashboard", icon: "D" },
+    { to: "/patients", label: "Patients", icon: "P" },
+    { to: "/appointments", label: "Appointments", icon: "A" },
+    { to: "/doctors", label: "Doctors", icon: "DR" },
+    { to: "/reports", label: "Reports", icon: "R" },
+    { to: "/ai-assistant", label: "AI Assistant", icon: "AI" },
+    { to: "/settings", label: "Settings", icon: "S" },
+  ];
 
   return (
-    <div
-      className={`w-64 min-h-screen p-5 border-r ${
-        darkMode
-          ? "bg-gray-900 border-gray-800 text-white"
-          : "bg-white border-gray-200 text-gray-800"
-      }`}
-    >
-      {/* Logo */}
-      <div className="flex items-center gap-3 mb-10">
-        <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">
-          M
-        </div>
+    <aside className="app-sidebar">
+      <NavLink to="/" className="app-sidebar-logo">
+        <span>M</span>
+        MedSync
+      </NavLink>
 
-        <h1 className="text-2xl font-bold">
-          MedSync
-        </h1>
-      </div>
-
-      <nav className="space-y-3">
-        <NavLink
-          to="/dashboard"
-          className={({ isActive }) =>
-            `${linkStyle} ${
-              isActive
-                ? "bg-blue-100 text-blue-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-        >
-          <span className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-sm">
-            D
-          </span>
-          Dashboard
-        </NavLink>
-
-        <NavLink
-          to="/patients"
-          className={({ isActive }) =>
-            `${linkStyle} ${
-              isActive
-                ? "bg-blue-100 text-blue-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-        >
-          <span className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-sm">
-            P
-          </span>
-          Patients
-        </NavLink>
-
-        <NavLink
-          to="/appointments"
-          className={({ isActive }) =>
-            `${linkStyle} ${
-              isActive
-                ? "bg-blue-100 text-blue-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-        >
-          <span className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-sm">
-            A
-          </span>
-          Appointments
-        </NavLink>
-
-        <NavLink
-          to="/doctors"
-          className={({ isActive }) =>
-            `${linkStyle} ${
-              isActive
-                ? "bg-blue-100 text-blue-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-        >
-          <span className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs">
-            DR
-          </span>
-          Doctors
-        </NavLink>
-
-        <NavLink
-          to="/reports"
-          className={({ isActive }) =>
-            `${linkStyle} ${
-              isActive
-                ? "bg-blue-100 text-blue-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-        >
-          <span className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-sm">
-            R
-          </span>
-          Reports
-        </NavLink>
-
-        <NavLink
-          to="/ai-assistant"
-          className={({ isActive }) =>
-            `${linkStyle} ${
-              isActive
-                ? "bg-blue-100 text-blue-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-        >
-          <span className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs">
-            AI
-          </span>
-          AI Assistant
-        </NavLink>
-
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `${linkStyle} ${
-              isActive
-                ? "bg-blue-100 text-blue-600"
-                : "hover:bg-gray-100"
-            }`
-          }
-        >
-          <span className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-sm">
-            S
-          </span>
-          Settings
-        </NavLink>
+      <nav className="app-sidebar-nav">
+        {links.map((link) => (
+          <NavLink
+            className={({ isActive }) => (isActive ? "active" : undefined)}
+            key={link.to}
+            to={link.to}
+          >
+            <span>{link.icon}</span>
+            {link.label}
+          </NavLink>
+        ))}
       </nav>
-    </div>
+    </aside>
   );
 }
 
