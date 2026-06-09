@@ -1,27 +1,28 @@
 const express = require("express");
-const {
-  createAppointment,
-  getAppointments,
-  getMyAppointments,
-  getAppointmentById,
-  updateAppointment,
-  deleteAppointment,
-} = require("../controllers/appointmentController");
-const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(protect, getAppointments)
-  .post(protect, createAppointment);
+const { protect } = require("../middleware/authMiddleware");
 
+const {
+  bookAppointment,
+  getMyAppointments,
+  cancelAppointment,
+} = require("../controllers/appointmentController");
+
+
+console.log("protect =", protect);
+console.log("bookAppointment =", bookAppointment);
+console.log("getMyAppointments =", getMyAppointments);
+console.log("cancelAppointment =", cancelAppointment);
+
+// Book Appointment
+router.post("/", protect, bookAppointment);
+
+// Get My Appointments
 router.get("/my", protect, getMyAppointments);
 
-router
-  .route("/:id")
-  .get(protect, getAppointmentById)
-  .put(protect, updateAppointment)
-  .delete(protect, deleteAppointment);
+// Cancel Appointment
+router.delete("/:id", protect, cancelAppointment);
 
 module.exports = router;
