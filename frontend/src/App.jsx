@@ -10,6 +10,7 @@ import Doctors from "./pages/Doctors";
 import Patients from "./pages/Patients";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import AIAssistant from "./pages/AIAssistant";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const protectedRoute = (page) => (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/doctors" element={protectedRoute(<Doctors />)} />
         <Route path="/patients" element={protectedRoute(<Patients />)} />
         <Route path="/reports" element={protectedRoute(<Reports />)} />
+        <Route path="/ai-assistant" element={protectedRoute(<AIAssistant />)} />
         <Route path="/settings" element={protectedRoute(<Settings />)} />
         <Route path="*" element={<NotFound />} />
       </Routes>
