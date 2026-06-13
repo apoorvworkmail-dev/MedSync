@@ -1,8 +1,8 @@
-function PatientCard({ patient }) {
+function PatientCard({ patient, onDelete }) {
   const statusClass =
     patient.status === "Critical"
       ? "danger"
-      : patient.status === "Review"
+      : patient.status === "Review" || patient.status === "Recovering"
         ? "warning"
         : "success";
 
@@ -15,10 +15,17 @@ function PatientCard({ patient }) {
           {patient.age} years - {patient.condition}
         </p>
         <small>
-          ID: {patient.id} - Last visit: {patient.lastVisit}
+          ID: {patient.id} - Last visit: {patient.lastVisit || 'N/A'}
         </small>
       </div>
-      <em className={statusClass}>{patient.status}</em>
+      <div className="patient-actions">
+        <em className={statusClass}>{patient.status}</em>
+        {onDelete && (
+          <button onClick={() => onDelete(patient.id)}>
+            Delete
+          </button>
+        )}
+      </div>
     </article>
   );
 }

@@ -1,13 +1,14 @@
-function DashboardCard({ title, value, detail, tone = "blue" }) {
+function DashboardCard(props) {
+
   return (
-    <article className="dashboard-card">
-      <span className={`metric-icon ${tone}`}>{title.charAt(0)}</span>
-      <div>
-        <p>{title}</p>
-        <h2>{value}</h2>
-        {detail && <small>{detail}</small>}
-      </div>
-    </article>
+
+    <div className="dashboard-card">
+
+      <h3>{props.title}</h3>
+
+      <p>{props.value}</p>
+
+    </div>
   );
 }
 

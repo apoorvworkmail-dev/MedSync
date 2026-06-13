@@ -25,7 +25,7 @@ function AppointmentCard({ appointment, onCancel }) {
 
           <button
             onClick={() => onCancel?.(appointment.id)}
-            className="mt-2 text-sm text-red-600 hover:underline"
+            className="mt-2 text-sm bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded"
             type="button"
           >
             Cancel
