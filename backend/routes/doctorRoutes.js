@@ -1,22 +1,25 @@
+console.log("Doctor Routes Loaded");
 const express = require("express");
-const {
-  addDoctor,
-  getDoctors,
-  getDoctorById,
-  updateDoctor,
-  deleteDoctor,
-} = require("../controllers/doctorController");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.route("/")
-  .get(protect, getDoctors)
-  .post(protect, addDoctor);
+const {
+  addDoctor,
+  getDoctors,
+  updateDoctor,
+  deleteDoctor,
+} = require("../controllers/doctorController");
 
-router.route("/:id")
-  .get(protect, getDoctorById)
-  .put(protect, updateDoctor)
-  .delete(protect, deleteDoctor);
+
+// Add Doctor
+router.post("/", protect, addDoctor);
+
+// Get All Doctors
+router.get("/", protect, getDoctors);
+
+router.put("/:id", protect, updateDoctor);
+
+router.delete("/:id", protect, deleteDoctor);
 
 module.exports = router;

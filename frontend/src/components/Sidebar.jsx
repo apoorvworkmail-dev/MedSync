@@ -1,8 +1,17 @@
 import { NavLink } from "react-router-dom";
 
 function Sidebar() {
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const dashboardPath =
+    user?.role === "doctor"
+      ? "/doctor"
+      : user?.role === "patient"
+        ? "/patient"
+        : "/dashboard";
+
   const links = [
-    { to: "/dashboard", label: "Dashboard", icon: "D" },
+    { to: dashboardPath, label: "Dashboard", icon: "D" },
     { to: "/patients", label: "Patients", icon: "P" },
     { to: "/appointments", label: "Appointments", icon: "A" },
     { to: "/doctors", label: "Doctors", icon: "DR" },
@@ -30,6 +39,41 @@ function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <button
+        onClick={() => {
+          localStorage.clear();
+          window.location.href = "/login";
+        }}
+        style={{
+          marginTop: "auto",
+          width: "100%",
+          padding: "12px 14px",
+          background: "rgba(239, 68, 68, 0.08)",
+          color: "#ef4444",
+          border: "none",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontWeight: "800",
+          textAlign: "left",
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          fontSize: "14px"
+        }}
+      >
+        <span style={{
+          display: "grid",
+          width: "28px",
+          height: "28px",
+          placeItems: "center",
+          borderRadius: "8px",
+          background: "rgba(239, 68, 68, 0.15)",
+          color: "#ef4444",
+          fontSize: "12px"
+        }}>🔓</span>
+        Logout
+      </button>
     </aside>
   );
 }

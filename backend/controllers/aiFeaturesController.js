@@ -89,9 +89,16 @@ const chatWithAI = async (req, res) => {
 
     const response = await askGemini(prompt);
 
-    return res.status(200).json({ success: true, response });
+    return res.status(200).json({
+      success: true,
+      response,
+    });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "AI request failed", error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "AI request failed",
+      error: error.message,
+    });
   }
 };
 
@@ -235,7 +242,7 @@ const conversationBookAppointment = async (req, res) => {
       appointmentDate: new Date(data.date),
       appointmentTime: data.time,
       reason: `Booked via AI: ${data.specialization}`,
-      status: "scheduled",
+      status: "Pending",
     });
 
     const populated = await appointment.populate("doctor");

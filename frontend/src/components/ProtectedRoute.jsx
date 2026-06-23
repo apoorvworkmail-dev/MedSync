@@ -1,11 +1,24 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
-function ProtectedRoute({ children }) {
-  const location = useLocation();
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+function ProtectedRoute({
+  children,
+  allowedRoles = [],
+}) {
+  const token = localStorage.getItem("token");
 
-  if (!isLoggedIn) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
+  const user = JSON.parse(
+    localStorage.getItem("user")
+  );
+
+  if (!token || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (
+    allowedRoles.length > 0 &&
+    !allowedRoles.includes(user.role)
+  ) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

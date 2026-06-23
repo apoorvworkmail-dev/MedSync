@@ -30,9 +30,10 @@ const sendAuthResponse = (res, statusCode, message, user) => {
     message,
     token,
     user: {
-      id: user._id,
+      _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
     },
   });
 
@@ -47,7 +48,7 @@ const signupUser = async (req, res) => {
 
   try {
 
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Validation
     if (!name || !email || !password) {
@@ -97,6 +98,7 @@ const signupUser = async (req, res) => {
       name: trimmedName,
       email: normalizedEmail,
       password: hashedPassword,
+      role,
     });
 
     // Send Response

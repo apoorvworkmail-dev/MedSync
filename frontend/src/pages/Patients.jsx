@@ -1,10 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import PatientCard from "../components/PatientCard";
-import patientsData from "../data/patients";
 import DashboardLayout from "../layouts/DashboardLayout";
+import API from "../services/api";
 
 function Patients() {
-  const [patients, setPatients] = useState(patientsData);
+  const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -13,53 +15,114 @@ function Patients() {
   const [editingPatient, setEditingPatient] = useState(null);
 
   const [newPatient, setNewPatient] = useState({
-    id: "",
     name: "",
     age: "",
-    condition: "",
+    gender: "",
+    phone: "",
+    address: "",
+    disease: "",
     status: "Stable",
+    doctor: "",
   });
 
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await API.get("/patients", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.data.patients) {
+          // Map backend _id to id if necessary, or just use it as is
+          const mapped = response.data.patients.map(p => ({
+            ...p,
+            id: p._id || p.id,
+          }));
+          setPatients(mapped);
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPatients();
+  }, []);
+
   const statuses = useMemo(
-    () => [...new Set(patients.map((patient) => patient.status))],
+    () => [...new Set(patients.map((patient) => patient.status || "Unknown"))],
     [patients]
   );
 
   const filteredPatients = patients.filter((patient) => {
     const search = searchTerm.trim().toLowerCase();
     const conditionStr = (patient.condition || patient.disease || "").toLowerCase();
-    
+
     const matchesSearch =
-      patient.name.toLowerCase().includes(search) ||
-      patient.id.toLowerCase().includes(search) ||
+      (patient.name || "").toLowerCase().includes(search) ||
+      (patient.id || "").toLowerCase().includes(search) ||
       conditionStr.includes(search);
     const matchesStatus = !statusFilter || patient.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
 
-  const handleAddPatient = () => {
-    if (!newPatient.name || !newPatient.age || !newPatient.condition) {
-      alert("Please fill all fields");
+  const handleAddPatient = async () => {
+    if (
+      !newPatient.name ||
+      !newPatient.age ||
+      !newPatient.gender ||
+      !newPatient.phone ||
+      !newPatient.address ||
+      !newPatient.disease
+    ) {
+      toast.error("Please fill all fields");
       return;
     }
 
-    setPatients([
-      ...patients,
-      {
-        ...newPatient,
-        disease: newPatient.condition,
-        doctor: "Not Assigned",
-        id: `PT-${Date.now()}`,
-      },
-    ]);
+    const toastId = toast.loading("Saving patient...");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await API.post("/patients", {
+        name: newPatient.name,
+        age: Number(newPatient.age),
+        gender: newPatient.gender,
+        phone: newPatient.phone,
+        address: newPatient.address,
+        disease: newPatient.disease,
+        status: newPatient.status,
+        doctor: newPatient.doctor || "Not Assigned",
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.data.patient) {
+        const p = res.data.patient;
+        setPatients([...patients, { ...p, id: p._id }]);
+        toast.success("Patient added successfully", { id: toastId });
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(e.response?.data?.message || "Failed to save patient record", { id: toastId });
+      // Fallback to local state if API fails
+      setPatients([
+        ...patients,
+        {
+          ...newPatient,
+          id: `PT-${Date.now()}`,
+        },
+      ]);
+    }
 
     setNewPatient({
-      id: "",
       name: "",
       age: "",
-      condition: "",
+      gender: "",
+      phone: "",
+      address: "",
+      disease: "",
       status: "Stable",
+      doctor: "",
     });
 
     setShowForm(false);
@@ -71,50 +134,94 @@ function Patients() {
     setNewPatient({
       name: patient.name,
       age: patient.age,
-      condition: patient.condition || patient.disease,
-      status: patient.status,
+      gender: patient.gender || "",
+      phone: patient.phone || "",
+      address: patient.address || "",
+      disease: patient.disease || patient.condition || "",
+      status: patient.status || "Stable",
+      doctor: patient.doctor || "",
     });
 
     setShowForm(true);
   };
 
-  const handleUpdatePatient = () => {
-    const updatedPatients = patients.map((patient) =>
-      patient.id === editingPatient.id
-        ? {
-            ...patient,
-            ...newPatient,
-            disease: newPatient.condition,
-          }
-        : patient
-    );
+  const handleUpdatePatient = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await API.put(`/patients/${editingPatient.id}`, {
+        name: newPatient.name,
+        age: Number(newPatient.age),
+        gender: newPatient.gender,
+        phone: newPatient.phone,
+        address: newPatient.address,
+        disease: newPatient.disease,
+        status: newPatient.status,
+        doctor: newPatient.doctor || "Not Assigned",
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
-    setPatients(updatedPatients);
+      if (res.data.patient) {
+        const updated = res.data.patient;
+        setPatients(patients.map((patient) =>
+          patient.id === editingPatient.id ? { ...updated, id: updated._id } : patient
+        ));
+        toast.success("Patient updated successfully");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(e.response?.data?.message || "Failed to update patient");
+      // Fallback local update
+      setPatients(patients.map((patient) =>
+        patient.id === editingPatient.id ? { ...patient, ...newPatient } : patient
+      ));
+    }
+
     setEditingPatient(null);
     setShowForm(false);
 
     setNewPatient({
-      id: "",
       name: "",
       age: "",
-      condition: "",
+      gender: "",
+      phone: "",
+      address: "",
+      disease: "",
       status: "Stable",
+      doctor: "",
     });
   };
 
-  const handleDeletePatient = (id) => {
-    setPatients(patients.filter((patient) => patient.id !== id));
+  const handleDeletePatient = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await API.delete(`/patients/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      toast.success("Patient deleted successfully");
+      setPatients(patients.filter((patient) => patient.id !== id));
+    }
+    catch (e) {
+      console.error(e);
+      toast.error(
+        e.response?.data?.message ||
+        "Failed to delete patient"
+      );
+    }
   };
 
   const handleCancel = () => {
     setShowForm(false);
     setEditingPatient(null);
     setNewPatient({
-      id: "",
       name: "",
       age: "",
-      condition: "",
+      gender: "",
+      phone: "",
+      address: "",
+      disease: "",
       status: "Stable",
+      doctor: "",
     });
   };
 
@@ -154,11 +261,14 @@ function Patients() {
           onClick={() => {
             setEditingPatient(null);
             setNewPatient({
-              id: "",
               name: "",
               age: "",
-              condition: "",
+              gender: "",
+              phone: "",
+              address: "",
+              disease: "",
               status: "Stable",
+              doctor: "",
             });
             setShowForm(true);
           }}
@@ -202,13 +312,75 @@ function Patients() {
             </label>
 
             <label>
-              Condition
+              Gender
+              <select
+                value={newPatient.gender}
+                onChange={(e) =>
+                  setNewPatient({
+                    ...newPatient,
+                    gender: e.target.value,
+                  })
+                }
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+
+            <label>
+              Phone
               <input
                 type="text"
-                placeholder="Condition"
-                value={newPatient.condition}
+                value={newPatient.phone}
                 onChange={(e) =>
-                  setNewPatient({ ...newPatient, condition: e.target.value })
+                  setNewPatient({
+                    ...newPatient,
+                    phone: e.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <label>
+              Address
+              <input
+                type="text"
+                value={newPatient.address}
+                onChange={(e) =>
+                  setNewPatient({
+                    ...newPatient,
+                    address: e.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <label>
+              Disease
+              <input
+                type="text"
+                value={newPatient.disease}
+                onChange={(e) =>
+                  setNewPatient({
+                    ...newPatient,
+                    disease: e.target.value,
+                  })
+                }
+              />
+            </label>
+
+            <label>
+              Doctor
+              <input
+                type="text"
+                value={newPatient.doctor}
+                onChange={(e) =>
+                  setNewPatient({
+                    ...newPatient,
+                    doctor: e.target.value,
+                  })
                 }
               />
             </label>
@@ -240,19 +412,27 @@ function Patients() {
         </section>
       )}
 
-      <section className="resource-grid">
-        {filteredPatients.map((patient) => (
-          <PatientCard
-            key={patient.id}
-            patient={patient}
-            onEdit={handleEditPatient}
-            onDelete={handleDeletePatient}
-          />
-        ))}
-      </section>
+      {loading ? (
+        <div style={{ padding: "2rem", textAlign: "center", fontSize: "1.2rem", color: "#666" }}>
+          Loading patients...
+        </div>
+      ) : (
+        <>
+          <section className="resource-grid">
+            {filteredPatients.map((patient) => (
+              <PatientCard
+                key={patient.id}
+                patient={patient}
+                onEdit={handleEditPatient}
+                onDelete={handleDeletePatient}
+              />
+            ))}
+          </section>
 
-      {filteredPatients.length === 0 && (
-        <p className="empty-state">No patients match the current filters.</p>
+          {filteredPatients.length === 0 && (
+            <p className="empty-state">No patients match the current filters or no patients found.</p>
+          )}
+        </>
       )}
     </DashboardLayout>
   );

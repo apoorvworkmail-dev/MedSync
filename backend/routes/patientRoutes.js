@@ -1,16 +1,18 @@
+console.log("Patient Routes Loaded");
 const express = require("express");
 
 const {
   addPatient,
   getPatients,
+  updatePatient,
+  deletePatient,
 } = require("../controllers/patientController");
-const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(protect, getPatients)
-  .post(protect, addPatient);
+router.post("/", addPatient);
+router.get("/", getPatients);
+router.put("/:id", updatePatient);
+router.delete("/:id", deletePatient);
 
 module.exports = router;

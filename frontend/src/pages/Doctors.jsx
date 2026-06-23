@@ -1,36 +1,24 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layouts/DashboardLayout";
 import API from "../services/api";
 
-const dummyDoctors = [
-  {
-    name: "Dr. Sarah Johnson",
-    specialty: "General Medicine",
-    patients: 128,
-    availability: "Available",
-  },
-  {
-    name: "Dr. Arjun Mehta",
-    specialty: "Cardiology",
-    patients: 96,
-    availability: "In Surgery",
-  },
-  {
-    name: "Dr. Neha Rao",
-    specialty: "Neurology",
-    patients: 74,
-    availability: "Available",
-  },
-  {
-    name: "Dr. Kabir Singh",
-    specialty: "Orthopedics",
-    patients: 83,
-    availability: "On Leave",
-  },
-];
-
 function Doctors() {
-  const [doctors, setDoctors] = useState(dummyDoctors);
+  const navigate = useNavigate();
+  const [doctors, setDoctors] = useState([]);
+
+  const groupedDoctors = doctors.reduce((acc, doctor) => {
+    const dept = doctor.specialization || "General";
+
+    if (!acc[dept]) {
+      acc[dept] = [];
+    }
+
+    acc[dept].push(doctor);
+
+    return acc;
+  }, {});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -48,6 +36,8 @@ function Doctors() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -59,42 +49,108 @@ function Doctors() {
       title="Doctors"
       subtitle="Manage medical staff, specialties, and availability."
     >
-      <section className="resource-grid">
-        {doctors.map((doctor) => (
-          <article
-            className="resource-card doctor-card"
-            key={doctor._id || doctor.name}
-          >
-            <span className="resource-avatar">
-              {doctor.name?.split(" ")[1]?.charAt(0) || "D"}
-            </span>
+      {loading ? (
+        <div style={{ padding: "2rem", textAlign: "center", fontSize: "1.2rem", color: "#666" }}>Loading doctors...</div>
+      ) : doctors.length === 0 ? (
+        <div style={{ padding: "2rem", textAlign: "center", fontSize: "1.2rem", color: "#666" }}>No doctors found.</div>
+      ) : (
+        <>
+          {Object.entries(groupedDoctors).map(
+            ([department, doctorsList]) => (
+              <div key={department}>
 
-            <div>
-              <h2>{doctor.name}</h2>
+                <h2
+                  style={{
+                    marginTop: "30px",
+                    marginBottom: "15px",
+                    color: "#2563eb",
+                    fontSize: "1.5rem",
+                    fontWeight: "700",
+                  }}
+                >
+                  {department}
+                </h2>
 
-              <p>
-                {doctor.specialty || doctor.specialization}
-              </p>
+                <section className="resource-grid">
 
-              <small>
-                {doctor.patients || 0} active patients
-              </small>
-            </div>
+                  {doctorsList.map((doctor) => (
+                    <article
+                      className="resource-card doctor-card"
+                      key={doctor._id}
+                    >
+                      <span className="resource-avatar">
+                        {doctor.name?.replace(/^Dr\.\s*/, "").charAt(0).toUpperCase() || "D"}
+                      </span>
 
-            <em
-              className={
-                doctor.availability === "Available"
-                  ? "success"
-                  : doctor.availability === "In Surgery"
-                  ? "warning"
-                  : "danger"
-              }
-            >
-              {doctor.availability || "Available"}
-            </em>
-          </article>
-        ))}
-      </section>
+                      <div>
+
+                        <h3>{doctor.name}</h3>
+
+                        <p>
+                          {doctor.specialization}
+                        </p>
+
+                        <small>
+                          Experience:
+                          {" "}
+                          {doctor.experience}
+                          {" "}
+                          Years
+                        </small>
+
+                        <br />
+
+                        <small>
+                          Consultation Fee:
+                          {" "}
+                          ₹{doctor.fees}
+                        </small>
+
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "10px",
+                          alignItems: "flex-end",
+                        }}
+                      >
+                        <em
+                          className={
+                            doctor.availability === "Available"
+                              ? "success"
+                              : "warning"
+                          }
+                        >
+                          {doctor.availability}
+                        </em>
+
+                        <button
+                          onClick={() =>
+                            navigate("/appointments")
+                          }
+                          style={{
+                            padding: "8px 14px",
+                            border: "none",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Book Appointment
+                        </button>
+                      </div>
+
+                    </article>
+                  ))}
+
+                </section>
+
+              </div>
+            )
+          )}
+        </>
+      )}
     </DashboardLayout>
   );
 }

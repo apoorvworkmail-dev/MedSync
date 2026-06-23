@@ -1,42 +1,17 @@
-const Appointment = require("../models/Appointment");
-const Doctor = require("../models/Doctor");
 const Patient = require("../models/Patient");
+const Doctor = require("../models/Doctor");
+const Appointment = require("../models/Appointment");
 
-const startOfToday = () => {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date;
-};
-
-const startOfTomorrow = () => {
-  const date = startOfToday();
-  date.setDate(date.getDate() + 1);
-  return date;
-};
-
-const getDashboardSummary = async (req, res) => {
+const getDashboardStats = async (req, res) => {
   try {
-    const [totalPatients, totalDoctors, totalAppointments, todayAppointments] =
-      await Promise.all([
-        Patient.countDocuments(),
-        Doctor.countDocuments(),
-        Appointment.countDocuments(),
-        Appointment.countDocuments({
-          appointmentDate: {
-            $gte: startOfToday(),
-            $lt: startOfTomorrow(),
-          },
-        }),
-      ]);
+    const totalPatients = await Patient.countDocuments();
+    const totalDoctors = await Doctor.countDocuments();
+    const totalAppointments = await Appointment.countDocuments();
 
     res.status(200).json({
-      message: "Dashboard summary fetched successfully",
-      summary: {
-        totalPatients,
-        totalDoctors,
-        totalAppointments,
-        todayAppointments,
-      },
+      totalPatients,
+      totalDoctors,
+      totalAppointments,
     });
   } catch (error) {
     res.status(500).json({
@@ -47,5 +22,5 @@ const getDashboardSummary = async (req, res) => {
 };
 
 module.exports = {
-  getDashboardSummary,
+  getDashboardStats,
 };

@@ -26,6 +26,22 @@ const patientSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    disease: {
+      type: String,
+      default: "",
+    },
+
+    status: {
+      type: String,
+      enum: ["Stable", "Critical", "Recovering"],
+      default: "Stable",
+    },
+
+    doctor: {
+      type: String,
+      default: "Not Assigned",
+    },
   },
   { timestamps: true }
 );

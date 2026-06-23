@@ -1,41 +1,53 @@
 
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import API from "../services/api";
 
 function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const redirectTo = location.state?.from?.pathname || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await API.post("/auth/login", {
-      email,
-      password,
-    });
+    try {
+      const response = await API.post("/auth/login", {
+        email,
+        password,
+      });
 
-    localStorage.setItem("token", response.data.token);
-    localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("isLoggedIn", "true");
 
-    alert("Login Successful");
+      toast.success("Login Successful");
 
-    navigate(redirectTo, { replace: true });
+      const user = response.data.user;
 
-  } catch (error) {
-  console.log(error);
+      const role = user.role?.toLowerCase();
 
-  alert(
-    error.response?.data?.message ||
-    error.message ||
-    "Login Failed"
-  );
-}
-};
+      if (role === "admin") {
+        navigate("/dashboard");
+      }
+      else if (role === "doctor") {
+        navigate("/doctor");
+      }
+      else {
+        navigate("/patient");
+      }
+
+    } catch (error) {
+      console.log(error);
+
+      toast.error(
+        error.response?.data?.message ||
+        error.message ||
+        "Login Failed"
+      );
+    }
+  };
 
   return (
     <main className="auth-page">

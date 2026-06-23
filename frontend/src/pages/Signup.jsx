@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import API from "../services/api";
 
 function Signup() {
@@ -19,7 +20,7 @@ function Signup() {
     event.preventDefault();
 
     if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
-      alert("Please fill all fields");
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -27,11 +28,13 @@ function Signup() {
       const response = await API.post("/auth/signup", form);
 
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       localStorage.setItem("isLoggedIn", "true");
 
+      toast.success("Signup Successful");
       navigate("/dashboard");
     } catch (error) {
-      alert(
+      toast.error(
         error.response?.data?.message ||
           error.message ||
           "Signup failed"

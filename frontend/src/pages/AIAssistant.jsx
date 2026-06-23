@@ -29,6 +29,13 @@ function AIAssistant() {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   return (
     <DashboardLayout title="AI Assistant" subtitle="Ask health-related questions or get medical insights.">
       <div className="dashboard-panel">
@@ -41,6 +48,7 @@ function AIAssistant() {
           placeholder="Ask a health question..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
           style={{ width: "100%", padding: "16px", borderRadius: "8px", border: "1px solid #cbd5e1", minHeight: "150px", marginBottom: "16px", fontFamily: "inherit" }}
         />
 

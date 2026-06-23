@@ -1,35 +1,47 @@
 const patients = [
   {
-    id: "PT-2034-001",
-    name: "John Doe",
-    age: 45,
-    condition: "Hypertension",
-    lastVisit: "Today",
-    status: "Stable",
-  },
-  {
-    id: "PT-2034-002",
-    name: "Jane Smith",
+    id: 1,
+    name: "Rahul Sharma",
     age: 32,
-    condition: "Diabetes",
-    lastVisit: "Yesterday",
-    status: "Review",
-  },
-  {
-    id: "PT-2034-003",
-    name: "Mike Johnson",
-    age: 51,
-    condition: "Cardiology",
-    lastVisit: "May 12",
+    disease: "Pneumonia",
+    doctor: "Dr. Mehta",
     status: "Critical",
   },
+
   {
-    id: "PT-2034-004",
-    name: "Priya Sharma",
-    age: 28,
-    condition: "General Care",
-    lastVisit: "May 10",
+    id: 2,
+    name: "Priya Verma",
+    age: 27,
+    disease: "Diabetes",
+    doctor: "Dr. Singh",
     status: "Stable",
+  },
+
+  {
+    id: 3,
+    name: "Aman Gupta",
+    age: 45,
+    disease: "Heart Disease",
+    doctor: "Dr. Khanna",
+    status: "Recovering",
+  },
+
+  {
+    id: 4,
+    name: "Sneha Patel",
+    age: 36,
+    disease: "Asthma",
+    doctor: "Dr. Rao",
+    status: "Stable",
+  },
+
+  {
+    id: 5,
+    name: "Rohit Kumar",
+    age: 29,
+    disease: "Fracture",
+    doctor: "Dr. Mehta",
+    status: "Recovering",
   },
 ];
 

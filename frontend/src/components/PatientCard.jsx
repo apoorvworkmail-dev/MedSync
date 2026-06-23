@@ -1,32 +1,44 @@
-function PatientCard({ patient, onDelete }) {
-  const statusClass =
-    patient.status === "Critical"
-      ? "danger"
-      : patient.status === "Review" || patient.status === "Recovering"
-        ? "warning"
-        : "success";
-
+function PatientCard({ patient, onEdit, onDelete }) {
   return (
-    <article className="resource-card">
-      <span className="resource-avatar">{patient.name.charAt(0)}</span>
+    <div className="resource-card">
+
+      <div className="resource-avatar">
+        {patient.name?.charAt(0).toUpperCase()}
+      </div>
+
       <div>
         <h2>{patient.name}</h2>
+
         <p>
-          {patient.age} years - {patient.condition}
+          <strong>Status:</strong> {patient.status}
         </p>
-        <small>
-          ID: {patient.id} - Last visit: {patient.lastVisit || 'N/A'}
-        </small>
+
+        <p>
+          <strong>Age:</strong> {patient.age}
+        </p>
+
+        <p>
+          <strong>Disease:</strong>{" "}
+          {patient.disease || patient.condition}
+        </p>
+
+        <p>
+          <strong>Doctor:</strong>{" "}
+          {patient.doctor || "Not Assigned"}
+        </p>
       </div>
+
       <div className="patient-actions">
-        <em className={statusClass}>{patient.status}</em>
-        {onDelete && (
-          <button onClick={() => onDelete(patient.id)}>
-            Delete
-          </button>
-        )}
+        <button onClick={() => onEdit(patient)}>
+          Edit
+        </button>
+
+        <button onClick={() => onDelete(patient.id)}>
+          Delete
+        </button>
       </div>
-    </article>
+
+    </div>
   );
 }
 

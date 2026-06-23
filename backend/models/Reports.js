@@ -2,34 +2,56 @@ const mongoose = require("mongoose");
 
 const reportSchema = new mongoose.Schema(
   {
-    title: {
+    patientName: {
       type: String,
-      required: [true, "Report title is required"],
-      trim: true,
+      required: true,
     },
-    category: {
+
+    reportType: {
       type: String,
-      required: [true, "Report category is required"],
-      trim: true,
+      required: true,
     },
-    description: {
+
+    department: {
       type: String,
-      trim: true,
-      default: "",
+      required: true,
     },
+
     status: {
       type: String,
-      enum: ["draft", "published", "archived"],
-      default: "draft",
+      enum: ["Pending", "Completed", "Reviewed"],
+      default: "Pending",
     },
+
+    reportDate: {
+      type: Date,
+      default: Date.now,
+    },
+
+    title: {
+      type: String,
+    },
+
+    category: {
+      type: String,
+    },
+
     generatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
-    data: {
-      type: mongoose.Schema.Types.Mixed,
-      default: {},
+
+    reportName: {
+      type: String,
+    },
+
+    fileUrl: {
+      type: String,
+    },
+
+    aiSummary: {
+      type: String,
+      default: "",
     },
   },
   {

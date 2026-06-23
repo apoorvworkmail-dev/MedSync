@@ -44,9 +44,9 @@ function Home() {
         <nav className="landing-nav" aria-label="Main navigation">
           <a className="active" href="#home">Home</a>
           <a href="#features">Features</a>
-          <a href="#about">About Us</a>
-          <a href="#pricing">Pricing</a>
-          <a href="#contact">Contact</a>
+          <Link to="/about">About Us</Link>
+          <Link to="/pricing">Pricing</Link>
+          <Link to="/contact">Contact</Link>
         </nav>
 
         <div className="header-actions">

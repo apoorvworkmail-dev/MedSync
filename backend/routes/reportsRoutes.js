@@ -1,24 +1,40 @@
 const express = require("express");
-const {
-  createReport,
-  getReports,
-  getReportById,
-  updateReport,
-  deleteReport,
-} = require("../controllers/reportController");
 const { protect } = require("../middleware/authMiddleware");
-
+const upload = require("../middleware/reportUpload");
 const router = express.Router();
 
-router
-  .route("/")
-  .get(protect, getReports)
-  .post(protect, createReport);
+const {
+  getReports,
+  createReport,
+  updateReport,
+  deleteReport,
+  uploadReport,
+  getMyReports,
+  downloadReport,
+} = require("../controllers/reportController");
 
-router
-  .route("/:id")
-  .get(protect, getReportById)
-  .put(protect, updateReport)
-  .delete(protect, deleteReport);
+router.get("/", protect, getReports);
+router.post("/", protect, createReport);
+router.put("/:id", protect, updateReport);
+router.delete("/:id", protect, deleteReport);
+
+router.post(
+  "/upload",
+  protect,
+  upload.single("report"),
+  uploadReport
+);
+
+router.get(
+  "/my-reports",
+  protect,
+  getMyReports
+);
+
+router.get(
+  "/download/:id",
+  protect,
+  downloadReport
+);
 
 module.exports = router;

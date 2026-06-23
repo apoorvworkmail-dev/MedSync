@@ -1,6 +1,8 @@
 import DashboardLayout from "../layouts/DashboardLayout";
 
 function Settings() {
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   return (
     <DashboardLayout title="Settings" subtitle="Configure profile, security, and clinic preferences.">
       <section className="settings-grid">
@@ -11,15 +13,15 @@ function Settings() {
           <form className="settings-form">
             <label>
               Full name
-              <input type="text" defaultValue="Dr. Sarah Johnson" />
+              <input type="text" defaultValue={user.name || "User Name"} />
             </label>
             <label>
               Email
-              <input type="email" defaultValue="sarah@medsync.com" />
+              <input type="email" defaultValue={user.email || "user@medsync.com"} />
             </label>
             <label>
-              Department
-              <input type="text" defaultValue="General Medicine" />
+              Role
+              <input type="text" defaultValue={user.role ? (user.role.charAt(0).toUpperCase() + user.role.slice(1)) : "Staff"} disabled />
             </label>
             <button type="button">Save Changes</button>
           </form>

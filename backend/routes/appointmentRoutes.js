@@ -8,6 +8,7 @@ const {
   bookAppointment,
   getMyAppointments,
   cancelAppointment,
+  updateAppointmentStatus,
 } = require("../controllers/appointmentController");
 
 
@@ -24,5 +25,8 @@ router.get("/my", protect, getMyAppointments);
 
 // Cancel Appointment
 router.delete("/:id", protect, cancelAppointment);
+
+// Update Appointment Status
+router.put("/:id/status", protect, updateAppointmentStatus);
 
 module.exports = router;

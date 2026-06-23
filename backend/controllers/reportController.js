@@ -1,142 +1,16 @@
-const mongoose = require("mongoose");
 const Report = require("../models/Reports");
+const path = require("path");
+const fs = require("fs");
+const { PDFParse } = require("pdf-parse");
+const askGemini = require("../services/geminiServices");
 
-const VALID_STATUSES = ["draft", "published", "archived"];
-
-const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
-
-const normalizeStatus = (status) => {
-  if (typeof status !== "string") {
-    return status;
-  }
-
-  return status.toLowerCase().trim();
-};
-
-const validateReportInput = ({ title, category, description, status, data } = {}) => {
-  if (!title || !category) {
-    return "Report title and category are required";
-  }
-
-  if (
-    typeof title !== "string" ||
-    typeof category !== "string" ||
-    (description !== undefined && typeof description !== "string")
-  ) {
-    return "Report title, category, and description must be text values";
-  }
-
-  if (!title.trim() || !category.trim()) {
-    return "Report title and category cannot be empty";
-  }
-
-  if (status !== undefined && !VALID_STATUSES.includes(normalizeStatus(status))) {
-    return "Status must be draft, published, or archived";
-  }
-
-  if (data !== undefined && (data === null || typeof data !== "object" || Array.isArray(data))) {
-    return "Report data must be an object";
-  }
-
-  return null;
-};
-
-const validateReportUpdateInput = (body = {}) => {
-  if (Object.keys(body).length === 0) {
-    return "At least one field is required";
-  }
-
-  const { title, category, description, status, data } = body;
-
-  if (title !== undefined && (typeof title !== "string" || !title.trim())) {
-    return "Report title must be a non-empty text value";
-  }
-
-  if (category !== undefined && (typeof category !== "string" || !category.trim())) {
-    return "Report category must be a non-empty text value";
-  }
-
-  if (description !== undefined && typeof description !== "string") {
-    return "Report description must be a text value";
-  }
-
-  if (status !== undefined && !VALID_STATUSES.includes(normalizeStatus(status))) {
-    return "Status must be draft, published, or archived";
-  }
-
-  if (data !== undefined && (data === null || typeof data !== "object" || Array.isArray(data))) {
-    return "Report data must be an object";
-  }
-
-  return null;
-};
-
-const buildReportPayload = ({ title, category, description, status, data }, user) => ({
-  title: title.trim(),
-  category: category.trim(),
-  description: typeof description === "string" ? description.trim() : "",
-  status: normalizeStatus(status) || "draft",
-  generatedBy: user.id,
-  data: data || {},
-});
-
-const buildReportUpdatePayload = (body) => {
-  const payload = {};
-
-  if (body.title !== undefined) {
-    payload.title = body.title.trim();
-  }
-
-  if (body.category !== undefined) {
-    payload.category = body.category.trim();
-  }
-
-  if (body.description !== undefined) {
-    payload.description = body.description.trim();
-  }
-
-  if (body.status !== undefined) {
-    payload.status = normalizeStatus(body.status);
-  }
-
-  if (body.data !== undefined) {
-    payload.data = body.data;
-  }
-
-  return payload;
-};
-
-const createReport = async (req, res) => {
-  try {
-    const validationError = validateReportInput(req.body);
-
-    if (validationError) {
-      return res.status(400).json({ message: validationError });
-    }
-
-    const report = await Report.create(buildReportPayload(req.body, req.user));
-    const populatedReport = await report.populate("generatedBy", "name email");
-
-    res.status(201).json({
-      message: "Report created successfully",
-      report: populatedReport,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: "Server Error",
-      error: error.message,
-    });
-  }
-};
-
+// Get All Reports
 const getReports = async (req, res) => {
   try {
-    const reports = await Report.find()
-      .populate("generatedBy", "name email")
-      .sort({ createdAt: -1 });
+    console.log("GET /api/reports called - headers:", req.headers);
+    const reports = await Report.find();
 
     res.status(200).json({
-      message: "Reports fetched successfully",
       count: reports.length,
       reports,
     });
@@ -148,20 +22,24 @@ const getReports = async (req, res) => {
   }
 };
 
-const getReportById = async (req, res) => {
+// Add Report
+const createReport = async (req, res) => {
   try {
-    if (!isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: "Invalid report id" });
-    }
+    const { patientName, reportType, department, status, reportDate, title, category, generatedBy } = req.body;
 
-    const report = await Report.findById(req.params.id).populate("generatedBy", "name email");
+    const report = await Report.create({
+      patientName: patientName || "Unknown Patient",
+      reportType: reportType || title || "General Report",
+      department: department || category || "General",
+      status: status || "Pending",
+      reportDate: reportDate || new Date(),
+      title: title || reportType || "General Report",
+      category: category || department || "General",
+      generatedBy: generatedBy || req.user?.id,
+    });
 
-    if (!report) {
-      return res.status(404).json({ message: "Report not found" });
-    }
-
-    res.status(200).json({
-      message: "Report fetched successfully",
+    res.status(201).json({
+      message: "Report created successfully",
       report,
     });
   } catch (error) {
@@ -174,53 +52,66 @@ const getReportById = async (req, res) => {
 
 const updateReport = async (req, res) => {
   try {
-    if (!isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: "Invalid report id" });
-    }
 
-    const validationError = validateReportUpdateInput(req.body);
-
-    if (validationError) {
-      return res.status(400).json({ message: validationError });
-    }
-
-    const report = await Report.findByIdAndUpdate(
-      req.params.id,
-      buildReportUpdatePayload(req.body),
-      { new: true, runValidators: true }
-    ).populate("generatedBy", "name email");
+    const report =
+      await Report.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+          new: true,
+        }
+      );
 
     if (!report) {
-      return res.status(404).json({ message: "Report not found" });
+      return res.status(404).json({
+        message: "Report not found",
+      });
     }
 
-    res.status(200).json({
-      message: "Report updated successfully",
-      report,
-    });
+    res.status(200).json(report);
+
   } catch (error) {
     res.status(500).json({
-      message: "Server Error",
-      error: error.message,
+      message: error.message,
     });
   }
 };
 
 const deleteReport = async (req, res) => {
   try {
-    if (!isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: "Invalid report id" });
-    }
-
-    const report = await Report.findByIdAndDelete(req.params.id);
+    const report = await Report.findById(req.params.id);
 
     if (!report) {
-      return res.status(404).json({ message: "Report not found" });
+      return res.status(404).json({
+        message: "Report not found",
+      });
     }
+
+    // Only allow the owner of the report to delete it
+    if (report.generatedBy && report.generatedBy.toString() !== req.user.id.toString()) {
+      return res.status(403).json({
+        message: "You are not authorized to delete this report",
+      });
+    }
+
+    // Delete the file from filesystem if it exists
+    if (report.fileUrl) {
+      const filePath = path.resolve(report.fileUrl);
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error("Error deleting file from disk:", err);
+        } else {
+          console.log("File deleted from disk:", filePath);
+        }
+      });
+    }
+
+    await report.deleteOne();
 
     res.status(200).json({
       message: "Report deleted successfully",
     });
+
   } catch (error) {
     res.status(500).json({
       message: "Server Error",
@@ -229,10 +120,137 @@ const deleteReport = async (req, res) => {
   }
 };
 
+const uploadReport = async (req, res) => {
+  try {
+    const report = await Report.create({
+      patientName: req.body.patientName,
+      reportName: req.body.reportName,
+      reportType: req.body.reportType,
+      department: req.body.department,
+      generatedBy: req.user.id,
+      fileUrl: req.file
+        ? req.file.path.replace(/\\/g, "/")
+        : "",
+    });
+
+    let summary = "";
+
+    if (
+      req.file &&
+      req.file.mimetype === "application/pdf"
+    ) {
+      try {
+        const pdfBuffer =
+          fs.readFileSync(req.file.path);
+
+        const parser = new PDFParse({ data: pdfBuffer });
+
+        const pdfData =
+          await parser.getText();
+
+        await parser.destroy();
+
+        const extractedText =
+          pdfData.text.slice(0, 8000);
+
+        const prompt = `
+You are a medical report assistant.
+
+Analyze this report.
+
+Explain findings in simple language.
+
+Do NOT diagnose.
+
+Do NOT claim certainty.
+
+Keep answer under 150 words.
+
+Medical Report:
+
+${extractedText}
+`;
+
+        summary =
+          await askGemini(prompt);
+
+      } catch (error) {
+        console.log(
+          "PDF Summary Error:",
+          error.message
+        );
+      }
+    }
+
+    if (summary) {
+      report.aiSummary = summary;
+      await report.save();
+    }
+
+    res.status(201).json({
+      success: true,
+      report,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+const getMyReports = async (req, res) => {
+  try {
+
+    const reports = await Report.find({
+      generatedBy: req.user.id,
+    });
+
+    res.status(200).json(reports);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+const downloadReport = async (req, res) => {
+  try {
+
+    const report = await Report.findById(
+      req.params.id
+    );
+
+    if (!report) {
+      return res.status(404).json({
+        message: "Report not found",
+      });
+    }
+
+    if (!report.fileUrl) {
+      return res.status(400).json({
+        message: "This report does not have an associated file to download",
+      });
+    }
+
+    const absolutePath = path.resolve(report.fileUrl);
+    res.download(absolutePath);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
-  createReport,
   getReports,
-  getReportById,
+  createReport,
   updateReport,
   deleteReport,
+
+  uploadReport,
+  getMyReports,
+  downloadReport,
 };

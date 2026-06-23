@@ -5,36 +5,34 @@ const appointmentSchema = new mongoose.Schema(
     patient: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Patient is required"],
+      required: true,
     },
-    patientName: {
-      type: String,
-      required: [true, "Patient name is required"],
-      trim: true,
-    },
+
     doctor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Doctor",
-      required: [true, "Doctor is required"],
+      required: true,
     },
+
     appointmentDate: {
       type: Date,
-      required: [true, "Appointment date is required"],
+      required: true,
     },
+
     appointmentTime: {
       type: String,
-      required: [true, "Appointment time is required"],
-      trim: true,
+      required: true,
     },
-    reason: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+
     status: {
       type: String,
-      enum: ["scheduled", "completed", "cancelled"],
-      default: "scheduled",
+      enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
+      default: "Pending",
+    },
+
+    reason: {
+      type: String,
+      default: "",
     },
   },
   {

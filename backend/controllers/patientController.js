@@ -35,12 +35,15 @@ const validatePatientInput = ({ name, age, gender, phone, address } = {}) => {
   return null;
 };
 
-const buildPatientPayload = ({ name, age, gender, phone, address }) => ({
+const buildPatientPayload = ({ name, age, gender, phone, address, disease, condition, status, doctor }) => ({
   name: name.trim(),
   age: Number(age),
   gender: gender.trim(),
   phone: phone.trim(),
   address: address.trim(),
+  disease: (disease || condition || "").trim(),
+  status: status || "Stable",
+  doctor: doctor || "Not Assigned",
 });
 
 const addPatient = async (req, res) => {
@@ -82,7 +85,71 @@ const getPatients = async (req, res) => {
   }
 };
 
+const updatePatient = async (req, res) => {
+  try {
+    const validationError = validatePatientInput(req.body);
+
+    if (validationError) {
+      return res.status(400).json({
+        message: validationError,
+      });
+    }
+
+    const patient = await Patient.findByIdAndUpdate(
+      req.params.id,
+      buildPatientPayload(req.body),
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!patient) {
+      return res.status(404).json({
+        message: "Patient not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Patient updated successfully",
+      patient,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
+const deletePatient = async (req, res) => {
+  try {
+    const patient = await Patient.findByIdAndDelete(
+      req.params.id
+    );
+
+    if (!patient) {
+      return res.status(404).json({
+        message: "Patient not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Patient deleted successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   addPatient,
   getPatients,
+  updatePatient,
+  deletePatient,
 };

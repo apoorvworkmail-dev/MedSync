@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import AppointmentCard from "../components/AppointmentCard";
 import DashboardLayout from "../layouts/DashboardLayout";
 import API from "../services/api";
@@ -80,7 +81,7 @@ function Appointments() {
         },
       });
 
-      alert("Appointment booked successfully");
+      toast.success("Appointment booked successfully");
 
       setShowForm(false);
 
@@ -94,7 +95,7 @@ function Appointments() {
     } catch (error) {
       console.log(error);
 
-      alert(error.response?.data?.message || "Failed to book appointment");
+      toast.error(error.response?.data?.message || "Failed to book appointment");
     }
   };
 
@@ -108,13 +109,13 @@ function Appointments() {
         },
       });
 
-      alert("Appointment cancelled successfully");
+      toast.success("Appointment cancelled successfully");
 
       fetchAppointments();
     } catch (error) {
       console.log(error);
 
-      alert(
+      toast.error(
         error.response?.data?.message ||
         "Failed to cancel appointment"
       );
