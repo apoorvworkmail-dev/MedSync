@@ -244,9 +244,13 @@ function Reports() {
                     borderRadius: "12px",
                     marginBottom: "15px",
                     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    display: "flex",
+                    gap: "24px",
+                    alignItems: "flex-start"
                   }}
                 >
-                  <h3>{report.reportName}</h3>
+                  <div style={{ flex: 1 }}>
+                    <h3>{report.reportName}</h3>
 
                   <p>
                     <strong>Type:</strong> {report.reportType}
@@ -265,27 +269,7 @@ function Reports() {
                     {new Date(report.createdAt).toLocaleDateString()}
                   </p>
 
-                  {report.aiSummary && (
-                    <div
-                      style={{
-                        marginTop: "15px",
-                        padding: "15px",
-                        background: "#f8fafc",
-                        borderRadius: "10px",
-                        borderLeft: "4px solid #2563eb",
-                      }}
-                    >
-                      <h4>
-                        AI Summary
-                      </h4>
-
-                      <p>
-                        {report.aiSummary}
-                      </p>
-                    </div>
-                  )}
-
-                  <div style={{ display: "flex", gap: "12px", marginTop: "15px" }}>
+                  <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
                     {report.fileUrl ? (
                       <a
                         href={`http://localhost:5000/${report.fileUrl.replace(/\\/g, "/")}`}
@@ -342,6 +326,28 @@ function Reports() {
                       Delete
                     </button>
                   </div>
+                  </div>
+
+                  {report.aiSummary && (
+                    <div
+                      style={{
+                        flex: 1,
+                        padding: "15px",
+                        background: "#f8fafc",
+                        borderRadius: "10px",
+                        borderLeft: "4px solid #2563eb",
+                        height: "100%"
+                      }}
+                    >
+                      <h4 style={{ marginTop: 0, marginBottom: "8px", color: "#1e40af" }}>
+                        AI Summary
+                      </h4>
+
+                      <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: "1.5", color: "#334155" }}>
+                        {report.aiSummary}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

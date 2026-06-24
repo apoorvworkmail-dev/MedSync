@@ -6,51 +6,55 @@ function Pricing() {
 
   const plans = [
     {
-      name: "Basic Clinic",
-      price: billingCycle === "monthly" ? "0" : "0",
-      description: "Essential tools for solo practitioners and small local clinics.",
+      name: "Patient Plan",
+      price: "0",
+      description:
+        "Everything a patient needs to manage healthcare in one place.",
       features: [
-        "Up to 50 patients records",
-        "Basic scheduling tools",
-        "Static PDF file upload & view",
-        "Email support",
-        "Single user login"
+        "Book Appointments",
+        "AI Health Assistant",
+        "Upload Medical Reports",
+        "Download Reports",
+        "Access Doctor Directory",
+        "Secure Patient Account"
       ],
-      cta: "Start for Free",
+      cta: "Get Started Free",
       popular: false,
-      buttonStyle: "btn btn-outline"
+      buttonStyle: "btn btn-primary"
     },
     {
-      name: "Professional Hub",
-      price: billingCycle === "monthly" ? "49" : "39",
-      description: "Advanced AI summaries and smart reminders for growing practices.",
+      name: "Doctor Pro",
+      price: billingCycle === "monthly" ? "499" : "399",
+      description:
+        "Advanced tools for doctors and private practices.",
       features: [
-        "Unlimited patients records",
-        "Automated AI summaries via Gemini",
-        "Fast PDF text extraction",
-        "Custom intake forms & settings",
-        "Priority 24/7 support",
-        "Up to 5 staff user seats"
+        "Unlimited Appointments",
+        "Patient Management",
+        "AI Report Summaries",
+        "Medical Records Access",
+        "Analytics Dashboard",
+        "Priority Support"
       ],
-      cta: "Upgrade to Professional",
+      cta: "Upgrade to Pro",
       popular: true,
       buttonStyle: "btn btn-primary"
     },
     {
-      name: "Enterprise Network",
-      price: billingCycle === "monthly" ? "199" : "159",
-      description: "Complete operational suite for hospitals and healthcare networks.",
+      name: "Hospital Enterprise",
+      price: "Custom",
+      description:
+        "Complete healthcare management solution for hospitals.",
       features: [
-        "Everything in Professional",
-        "Custom database hosting & SLA",
-        "Advanced custom AI prompt adjustments",
-        "HL7 / FHIR integration support",
-        "Unlimited staff user seats",
-        "Dedicated Account Executive"
+        "Multi-Doctor Management",
+        "Unlimited Patients",
+        "Advanced Analytics",
+        "Centralized Records",
+        "Dedicated Support",
+        "API Integration"
       ],
-      cta: "Contact Enterprise Sales",
+      cta: "Contact Sales",
       popular: false,
-      buttonStyle: "btn btn-outline"
+      buttonStyle: "btn btn-primary"
     }
   ];
 
@@ -188,9 +192,46 @@ function Pricing() {
                 {plan.description}
               </p>
 
-              <div style={{ display: "flex", alignItems: "baseline", marginBottom: "30px" }}>
-                <span style={{ fontSize: "2.5rem", fontWeight: "900", color: "#0f172a" }}>₹{plan.price}</span>
-                <span style={{ color: "#64748b", fontWeight: "600", marginLeft: "6px" }}>/ month</span>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "baseline",
+                  marginBottom: "30px"
+                }}
+              >
+                {plan.price === "Custom" ? (
+                  <span
+                    style={{
+                      fontSize: "2rem",
+                      fontWeight: "900",
+                      color: "#0f172a"
+                    }}
+                  >
+                    Custom Pricing
+                  </span>
+                ) : (
+                  <>
+                    <span
+                      style={{
+                        fontSize: "2.5rem",
+                        fontWeight: "900",
+                        color: "#0f172a"
+                      }}
+                    >
+                      ₹{plan.price}
+                    </span>
+
+                    <span
+                      style={{
+                        color: "#64748b",
+                        fontWeight: "600",
+                        marginLeft: "6px"
+                      }}
+                    >
+                      / month
+                    </span>
+                  </>
+                )}
               </div>
 
               <hr style={{ border: "0", borderTop: "1px solid #f1f5f9", marginBottom: "30px" }} />
@@ -225,6 +266,59 @@ function Pricing() {
         ))}
       </section>
 
+      {/* Stats Section */}
+      <section
+        style={{
+          padding: "60px 9%",
+          background: "white"
+        }}
+      >
+        <h2
+          style={{
+            textAlign: "center",
+            marginBottom: "40px",
+            fontSize: "2rem",
+            fontWeight: "800"
+          }}
+        >
+          Trusted By Healthcare Professionals
+        </h2>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(5, 1fr)",
+            gap: "20px",
+            textAlign: "center"
+          }}
+        >
+          <div>
+            <h3 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#2563eb", marginBottom: "8px" }}>10,000+</h3>
+            <p style={{ color: "#64748b", fontWeight: "600" }}>Active Users</p>
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#2563eb", marginBottom: "8px" }}>50,000+</h3>
+            <p style={{ color: "#64748b", fontWeight: "600" }}>Appointments</p>
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#2563eb", marginBottom: "8px" }}>25,000+</h3>
+            <p style={{ color: "#64748b", fontWeight: "600" }}>Patients</p>
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#2563eb", marginBottom: "8px" }}>500+</h3>
+            <p style={{ color: "#64748b", fontWeight: "600" }}>Hospitals</p>
+          </div>
+
+          <div>
+            <h3 style={{ fontSize: "2.5rem", fontWeight: "800", color: "#2563eb", marginBottom: "8px" }}>99.9%</h3>
+            <p style={{ color: "#64748b", fontWeight: "600" }}>Uptime</p>
+          </div>
+        </div>
+      </section>
+
       {/* Frequently Asked Questions */}
       <section style={{ padding: "60px 9% 100px", background: "#f1f5f9" }}>
         <h2 style={{ fontSize: "2.25rem", fontWeight: "800", color: "#0f172a", marginBottom: "50px", textAlign: "center" }}>
@@ -244,9 +338,24 @@ function Pricing() {
             </p>
           </div>
           <div>
-            <h4 style={{ fontSize: "1.15rem", fontWeight: "700", color: "#0f172a", marginBottom: "12px" }}>Is MedSync HIPAA compliant?</h4>
-            <p style={{ color: "#64748b", lineHeight: "1.6" }}>
-              MedSync employs industry-leading security practices, including data-at-rest encryption, end-to-end HTTPS transfers, and secure authentication to help keep patient data fully private.
+            <h4
+              style={{
+                fontSize: "1.15rem",
+                fontWeight: "700",
+                color: "#0f172a",
+                marginBottom: "12px"
+              }}
+            >
+              How secure is my medical data?
+            </h4>
+
+            <p
+              style={{
+                color: "#64748b",
+                lineHeight: "1.6"
+              }}
+            >
+              MedSync uses encrypted connections, secure authentication, and protected database storage to safeguard patient information.
             </p>
           </div>
           <div>

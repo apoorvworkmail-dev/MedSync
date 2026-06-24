@@ -179,6 +179,9 @@ ${extractedText}
           "PDF Summary Error:",
           error.message
         );
+
+        summary =
+          "AI summary is temporarily unavailable. Please try again later.";
       }
     }
 
