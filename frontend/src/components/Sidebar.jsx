@@ -1,7 +1,8 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Sidebar() {
   const user = JSON.parse(localStorage.getItem("user"));
+  const navigate = useNavigate();
 
   const dashboardPath =
     user?.role === "doctor"
@@ -43,7 +44,7 @@ function Sidebar() {
       <button
         onClick={() => {
           localStorage.clear();
-          window.location.href = "/login";
+          navigate("/login");
         }}
         style={{
           marginTop: "auto",
