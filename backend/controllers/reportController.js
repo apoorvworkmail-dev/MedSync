@@ -144,10 +144,8 @@ const uploadReport = async (req, res) => {
           fs.readFileSync(req.file.path);
 
         const parser = new PDFParse({ data: pdfBuffer });
-
-        const pdfData =
-          await parser.getText();
-
+        await parser.load();
+        const pdfData = await parser.getText();
         await parser.destroy();
 
         const extractedText =
