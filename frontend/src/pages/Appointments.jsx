@@ -43,6 +43,7 @@ function Appointments() {
   const [showForm, setShowForm] = useState(false);
 
   const [newAppointment, setNewAppointment] = useState({
+    department: "",
     doctor: "",
     appointmentDate: "",
     appointmentTime: "",
@@ -86,6 +87,7 @@ function Appointments() {
       setShowForm(false);
 
       setNewAppointment({
+        department: "",
         doctor: "",
         appointmentDate: "",
         appointmentTime: "",
@@ -238,11 +240,37 @@ function Appointments() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "2fr 1fr 1fr auto",
+              gridTemplateColumns: "1.5fr 1.5fr 1fr 1fr auto",
               gap: "16px",
               alignItems: "center",
             }}
           >
+            <select
+              value={newAppointment.department}
+              onChange={(event) =>
+                setNewAppointment({
+                  ...newAppointment,
+                  department: event.target.value,
+                  doctor: "",
+                })
+              }
+              style={{
+                padding: "12px",
+                border: "1px solid #d1d5db",
+                borderRadius: "10px",
+                fontSize: "14px",
+                width: "100%",
+                backgroundColor: "#fff",
+              }}
+            >
+              <option value="">Select Department</option>
+              {["Surgery", "Orthopedics", "Dermatology", "General Medicine", "Cardiology", "Neurology"].map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
+
             <select
               value={newAppointment.doctor}
               onChange={(event) =>
@@ -261,12 +289,13 @@ function Appointments() {
               }}
             >
               <option value="">Select Doctor</option>
-
-              {doctors.map((doctor) => (
-                <option key={doctor._id} value={doctor._id}>
-                  {doctor.name}
-                </option>
-              ))}
+              {doctors
+                .filter((doctor) => !newAppointment.department || doctor.specialization === newAppointment.department)
+                .map((doctor) => (
+                  <option key={doctor._id} value={doctor._id}>
+                    {doctor.name}
+                  </option>
+                ))}
             </select>
 
             <input
