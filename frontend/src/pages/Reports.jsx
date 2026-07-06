@@ -61,11 +61,7 @@ function Reports() {
       formData.append("department", form.department || "General");
       formData.append("report", file);
 
-      await API.post("/reports/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await API.post("/reports/upload", formData);
 
       toast.success("Report uploaded successfully");
       setForm({
