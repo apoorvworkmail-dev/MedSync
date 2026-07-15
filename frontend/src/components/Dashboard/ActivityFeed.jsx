@@ -1,5 +1,5 @@
 const activities = [
-  "New patient record added for John Doe",
+  "New patient record added for Chirag Gandhi",
   "Dr. Mehta confirmed 3 appointments",
   "Lab report uploaded for Jane Smith",
   "System backup completed successfully",

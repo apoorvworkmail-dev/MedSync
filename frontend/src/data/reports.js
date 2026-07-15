@@ -1,7 +1,7 @@
 const reports = [
   {
     id: 1,
-    patient: "John Doe",
+    patient: "Chirag Gandhi",
     report: "Blood Test",
     department: "Pathology",
     date: "May 18, 2026",

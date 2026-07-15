@@ -1,5 +1,5 @@
 const patients = [
-  { name: "John Doe", detail: "General Checkup", time: "09:00 AM", status: "Confirmed" },
+  { name: "Chirag Gandhi", detail: "General Checkup", time: "09:00 AM", status: "Confirmed" },
   { name: "Jane Smith", detail: "Follow-up", time: "10:30 AM", status: "Confirmed" },
   { name: "Mike Johnson", detail: "Consultation", time: "02:00 PM", status: "Pending" },
   { name: "Priya Sharma", detail: "Lab Review", time: "04:15 PM", status: "Confirmed" },

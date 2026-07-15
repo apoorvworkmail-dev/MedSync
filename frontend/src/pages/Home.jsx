@@ -104,7 +104,7 @@ function Home() {
             <div className="patient-row">
               <span className="patient-avatar" />
               <div>
-                <strong>John Doe</strong>
+                <strong>Chirag Gandhi</strong>
                 <small>ID: PT-2034-001</small>
               </div>
             </div>
@@ -177,8 +177,8 @@ function Home() {
               <div className="preview-lower">
                 <div className="appointments-list">
                   <h3>Recent Appointments</h3>
-                  <p><span>John Doe</span><strong>09:00 AM</strong><em>Confirmed</em></p>
-                  <p><span>Jane Smith</span><strong>10:30 AM</strong><em>Confirmed</em></p>
+                  <p><span>Chirag Gandhi</span><strong>09:00 AM</strong><em>Confirmed</em></p>
+                  <p><span>Apoorv Mishra</span><strong>10:30 AM</strong><em>Confirmed</em></p>
                   <p><span>Mike Johnson</span><strong>02:00 PM</strong><em>Pending</em></p>
                 </div>
                 <div className="chart-card">
